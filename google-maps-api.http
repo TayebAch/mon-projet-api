@@ -1,0 +1,108 @@
+# ==========================================
+# Google Maps API - Rahul Shetty Academy
+# ==========================================
+
+# @name addPlace
+POST {{baseUrl}}/maps/api/place/add/json?key={{apiKey}}
+Content-Type: application/json
+
+{
+  "location": {
+    "lat": -38.383494,
+    "lng": 33.427362
+  },
+  "accuracy": 50,
+  "name": "Frontline house",
+  "phone_number": "(+91) 983 893 3937",
+  "address": "29, side layout, cohen 09",
+  "types": ["shoe park", "shop"],
+  "website": "http://google.com",
+  "language": "French-IN"
+}
+
+> {%
+  client.global.set("place_id", response.body.place_id);
+  console.log("place_id capturé:", response.body.place_id);
+  client.test("ADD - Status OK", () => {
+    client.assert(response.body.status === "OK", "Status devrait etre OK");
+  });
+  client.test("ADD - place_id recu", () => {
+    client.assert(response.body.place_id !== undefined, "place_id devrait etre defini");
+  });
+%}
+
+###
+
+# @name getPlace
+GET {{baseUrl}}/maps/api/place/get/json?place_id={{place_id}}&key={{apiKey}}
+
+> {%
+  client.test("GET - Status 200", () => {
+    client.assert(response.status === 200, "Status devrait etre 200");
+  });
+  client.test("GET - Nom correct", () => {
+    client.assert(response.body.name === "Frontline house", "Nom incorrect");
+  });
+  client.test("GET - Accuracy = 50", () => {
+    client.assert(response.body.accuracy == 50, "Accuracy incorrecte");
+  });
+%}
+
+###
+
+# @name updatePlace
+PUT {{baseUrl}}/maps/api/place/update/json?key={{apiKey}}
+Content-Type: application/json
+
+{
+  "place_id": "{{place_id}}",
+  "address": "70 winter walk, USA",
+  "key": "{{apiKey}}"
+}
+
+> {%
+  client.test("UPDATE - Status 200", () => {
+    client.assert(response.status === 200, "Status devrait etre 200");
+  });
+  client.test("UPDATE - Message de succes", () => {
+    client.assert(response.body.msg === "Address successfully updated", "Message incorrect");
+  });
+%}
+
+###
+
+# @name verifyUpdate
+GET {{baseUrl}}/maps/api/place/get/json?place_id={{place_id}}&key={{apiKey}}
+
+> {%
+  client.test("VERIFY - Status 200", () => {
+    client.assert(response.status === 200, "Status devrait etre 200");
+  });
+  client.test("VERIFY - Nouvelle adresse confirmee", () => {
+    client.assert(response.body.address === "70 winter walk, USA", "Adresse incorrecte");
+  });
+  client.test("VERIFY - Nom inchange", () => {
+    client.assert(response.body.name === "Frontline house", "Nom incorrect");
+  });
+%}
+
+###
+
+# @name deletePlace
+POST {{baseUrl}}/maps/api/place/delete/json?key={{apiKey}}
+Content-Type: application/json
+
+{
+  "place_id": "{{place_id}}"
+}
+
+> {%
+  client.test("DELETE - Status 200", () => {
+    client.assert(response.status === 200, "Status devrait etre 200");
+  });
+  client.test("DELETE - Status OK", () => {
+    client.assert(response.body.status === "OK", "Status devrait etre OK");
+  });
+%}
+
+###
