@@ -1,0 +1,38 @@
+name: Tests API automatises
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Installer HttpYac
+        run: npm install -g httpyac
+
+      - name: Creer fichier .env
+        run: |
+          echo "baseUrl=https://rahulshettyacademy.com" > .env
+          echo "apiKey=qaclick123" >> .env
+
+      - name: Lancer les tests API
+        run: httpyac run google-maps-api.http --all --junit > rapport.xml
+
+      - name: Publier rapport JUnit
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: rapport-tests-api
+          path: rapport.xml
