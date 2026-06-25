@@ -31,7 +31,7 @@ jobs:
         run: httpyac run google-maps-api.http --all --junit > rapport.xml
 
       - name: Publier rapport JUnit
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: rapport-tests-api
