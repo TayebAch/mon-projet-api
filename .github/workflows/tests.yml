@@ -28,7 +28,7 @@ jobs:
           echo "apiKey=qaclick123" >> .env
 
       - name: Lancer les tests API
-        run: httpyac run google-maps-api.http --all --junit > rapport.xml
+        run: httpyac run *.http --all --junit > rapport.xml
 
       - name: Publier rapport JUnit
         uses: actions/upload-artifact@v4
